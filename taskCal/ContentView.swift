@@ -6,6 +6,7 @@ import Combine
 struct ContentView: View {
 	@StateObject private var viewModel = TaskViewModel()
 	@State private var selectedDayOffset = 0
+	// Maintains Dark Mode Toggle status on Quit
 	@AppStorage("isDarkMode") private var isDarkMode = false
 	@State private var markedEventIDs: Set<String> = []
 	
