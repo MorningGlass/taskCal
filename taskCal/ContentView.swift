@@ -6,7 +6,7 @@ import Combine
 struct ContentView: View {
 	@StateObject private var viewModel = TaskViewModel()
 	@State private var selectedDayOffset = 0
-	// Maintains Dark Mode Toggle status on Quit
+	// Dark Mode toggle persistent
 	@AppStorage("isDarkMode") private var isDarkMode = false
 	@State private var markedEventIDs: Set<String> = []
 	
@@ -281,17 +281,29 @@ struct TaskItem: Identifiable {
 	let type: ItemType
 	let listName: String?
 	let isAllDay: Bool
+	let hasTime: Bool
 	let originalObject: Any // EKReminder or EKEvent
 	let stableID: String // Stable identifier for persistence
 	
 	var timeString: String? {
-		if isAllDay {
-			return "All Day Event"
+		if type == .event {
+			if isAllDay {
+				return "All Day Event"
+			}
+			guard let date = date else { return nil }
+			let formatter = DateFormatter()
+			formatter.dateFormat = "HH:mm"
+			return formatter.string(from: date)
+		} else {
+			// For reminders
+			if !hasTime {
+				return "No time set"
+			}
+			guard let date = date else { return nil }
+			let formatter = DateFormatter()
+			formatter.dateFormat = "HH:mm"
+			return formatter.string(from: date)
 		}
-		guard let date = date else { return nil }
-		let formatter = DateFormatter()
-		formatter.timeStyle = .short
-		return formatter.string(from: date)
 	}
 }
 
@@ -374,6 +386,10 @@ class TaskViewModel: ObservableObject {
 					
 					guard dueDate >= startDate && dueDate < endDate else { return nil }
 					
+					// Check if reminder has a time set (hour and minute components)
+					let hasTime = reminder.dueDateComponents?.hour != nil &&
+					reminder.dueDateComponents?.minute != nil
+					
 					return TaskItem(
 						title: reminder.title ?? "Untitled",
 						date: dueDate,
@@ -381,6 +397,7 @@ class TaskViewModel: ObservableObject {
 						type: .reminder,
 						listName: reminder.calendar.title,
 						isAllDay: false,
+						hasTime: hasTime,
 						originalObject: reminder,
 						stableID: reminder.calendarItemIdentifier
 					)
@@ -408,6 +425,7 @@ class TaskViewModel: ObservableObject {
 					type: .event,
 					listName: event.calendar.title,
 					isAllDay: event.isAllDay,
+					hasTime: !event.isAllDay,
 					originalObject: event,
 					stableID: event.eventIdentifier ?? UUID().uuidString
 				)
