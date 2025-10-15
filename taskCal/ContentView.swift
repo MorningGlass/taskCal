@@ -6,8 +6,6 @@ import Combine
 struct ContentView: View {
 	@StateObject private var viewModel = TaskViewModel()
 	@State private var selectedDayOffset = 0
-	
-	// Stores Dark Mode when app is quit
 	@AppStorage("isDarkMode") private var isDarkMode = false
 	@State private var markedEventIDs: Set<String> = []
 	
@@ -28,6 +26,9 @@ struct ContentView: View {
 					
 					Text(headerTitle)
 						.font(.system(size: 32, weight: .bold))
+						.onTapGesture(count: 2) {
+							selectedDayOffset = 0
+						}
 					
 					Spacer()
 					
