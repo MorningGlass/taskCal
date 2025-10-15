@@ -10,7 +10,7 @@
 - [ ] Double clicking on task opens reminders app at that task or calendar at that entry?
 - [ ] Narrow window
 - [x] doubleclick  taskbar title  to return to today
-- [ ] Tasks with no time set should say so, rather than 00:00
+- [x] Tasks with no time set should say so, rather than 00:00
 
 ## Updates
 
