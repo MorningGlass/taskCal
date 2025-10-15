@@ -313,15 +313,29 @@ class TaskViewModel: ObservableObject {
 		var calendarGranted = false
 		
 		group.enter()
-		eventStore.requestAccess(to: .reminder) { granted, _ in
-			reminderGranted = granted
-			group.leave()
+		if #available(macOS 14.0, *) {
+			eventStore.requestFullAccessToReminders { granted, _ in
+				reminderGranted = granted
+				group.leave()
+			}
+		} else {
+			eventStore.requestAccess(to: .reminder) { granted, _ in
+				reminderGranted = granted
+				group.leave()
+			}
 		}
 		
 		group.enter()
-		eventStore.requestAccess(to: .event) { granted, _ in
-			calendarGranted = granted
-			group.leave()
+		if #available(macOS 14.0, *) {
+			eventStore.requestFullAccessToEvents { granted, _ in
+				calendarGranted = granted
+				group.leave()
+			}
+		} else {
+			eventStore.requestAccess(to: .event) { granted, _ in
+				calendarGranted = granted
+				group.leave()
+			}
 		}
 		
 		group.notify(queue: .main) {
@@ -377,7 +391,7 @@ class TaskViewModel: ObservableObject {
 		
 		// Load calendar events
 		group.enter()
-		DispatchQueue.global().async {
+		Task {
 			let calendar = Calendar.current
 			let startDate = calendar.startOfDay(for: calendar.date(byAdding: .day, value: -7, to: Date())!)
 			let endDate = calendar.date(byAdding: .day, value: 14, to: startDate)!
@@ -398,8 +412,10 @@ class TaskViewModel: ObservableObject {
 				)
 			}
 			
-			allItems.append(contentsOf: eventItems)
-			group.leave()
+			await MainActor.run {
+				allItems.append(contentsOf: eventItems)
+				group.leave()
+			}
 		}
 		
 		group.notify(queue: .main) {
