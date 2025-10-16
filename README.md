@@ -16,7 +16,7 @@
 
 [[2025-10-15]]
 
-Added ability to double click on Taskbar Title to reeturn to `dayOffset = 0`
+Added ability to double click on Taskbar Title to return to `dayOffset = 0`
 
 [[2025-10-16]]
 
