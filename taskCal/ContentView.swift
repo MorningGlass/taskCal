@@ -44,8 +44,9 @@ struct ContentView: View {
 					Button(action: {
 						viewModel.refresh()
 					}) {
-						Image(systemName: "arrow.clockwise")
-							.font(.system(size: 16))
+						Image(systemName: "arrow.clockwise.circle")
+							.font(.system(size: 32))
+							.foregroundColor(.primary)
 					}
 					.buttonStyle(.plain)
 					.padding(.leading, 16)
@@ -142,13 +143,13 @@ struct ContentView: View {
 					Button(action: {
 						isDarkMode.toggle()
 					}) {
-						Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
-							.font(.system(size: 20))
+						Image(systemName: isDarkMode ? "sun.max.circle" : "moon.circle")
+							.font(.system(size: 32))
 							.foregroundColor(.primary)
-							.frame(width: 44, height: 44)
-							.background(Color(NSColor.controlBackgroundColor))
-							.clipShape(Circle())
-							.shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+							// .frame(width: 44, height: 44)
+							// .background(Color(NSColor.controlBackgroundColor))
+							// .clipShape(Circle())
+							// .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
 					}
 					.buttonStyle(.plain)
 					.padding(24)
@@ -157,6 +158,8 @@ struct ContentView: View {
 		}
 		.preferredColorScheme(isDarkMode ? .dark : .light)
 	}
+	
+	// return Today/Date in header title
 	
 	private var headerTitle: String {
 		let calendar = Calendar.current
