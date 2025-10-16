@@ -6,6 +6,7 @@ import Combine
 struct ContentView: View {
 	@StateObject private var viewModel = TaskViewModel()
 	@State private var selectedDayOffset = 0
+	// Retain Dark/Light mode toggle state
 	@AppStorage("isDarkMode") private var isDarkMode = false
 	@State private var markedEventIDs: Set<String> = []
 	
@@ -144,10 +145,10 @@ struct ContentView: View {
 						Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
 							.font(.system(size: 20))
 							.foregroundColor(.primary)
-							.frame(width: 44, height: 44)
-							.background(Color(NSColor.controlBackgroundColor))
-							.clipShape(Circle())
-							.shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+//							.frame(width: 44, height: 44)
+//							.background(Color(NSColor.controlBackgroundColor))
+//							.clipShape(Circle())
+//							.shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
 					}
 					.buttonStyle(.plain)
 					.padding(24)
