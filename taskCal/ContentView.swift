@@ -6,7 +6,6 @@ import Combine
 struct ContentView: View {
 	@StateObject private var viewModel = TaskViewModel()
 	@State private var selectedDayOffset = 0
-	// Dark Mode toggle persistent
 	@AppStorage("isDarkMode") private var isDarkMode = false
 	@State private var markedEventIDs: Set<String> = []
 	
@@ -44,9 +43,8 @@ struct ContentView: View {
 					Button(action: {
 						viewModel.refresh()
 					}) {
-						Image(systemName: "arrow.clockwise.circle")
-							.font(.system(size: 32))
-							.foregroundColor(.primary)
+						Image(systemName: "arrow.clockwise")
+							.font(.system(size: 16))
 					}
 					.buttonStyle(.plain)
 					.padding(.leading, 16)
@@ -143,13 +141,13 @@ struct ContentView: View {
 					Button(action: {
 						isDarkMode.toggle()
 					}) {
-						Image(systemName: isDarkMode ? "sun.max.circle" : "moon.circle")
-							.font(.system(size: 32))
+						Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
+							.font(.system(size: 20))
 							.foregroundColor(.primary)
-							// .frame(width: 44, height: 44)
-							// .background(Color(NSColor.controlBackgroundColor))
-							// .clipShape(Circle())
-							// .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+							.frame(width: 44, height: 44)
+							.background(Color(NSColor.controlBackgroundColor))
+							.clipShape(Circle())
+							.shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
 					}
 					.buttonStyle(.plain)
 					.padding(24)
@@ -158,8 +156,6 @@ struct ContentView: View {
 		}
 		.preferredColorScheme(isDarkMode ? .dark : .light)
 	}
-	
-	// return Today/Date in header title
 	
 	private var headerTitle: String {
 		let calendar = Calendar.current
@@ -259,10 +255,35 @@ struct TaskItemView: View {
 		.padding(.horizontal, 16)
 		.background(Color(NSColor.controlBackgroundColor))
 		.opacity(displayAsCompleted ? 0.6 : 1.0)
+		.onTapGesture(count: 2) {
+			openInNativeApp()
+		}
 		.contextMenu {
 			if item.type == .event {
 				Button(isEventMarkedComplete ? "Mark as Incomplete" : "Mark as Complete") {
 					onToggleEventCompletion()
+				}
+			}
+		}
+	}
+	
+	private func openInNativeApp() {
+		if item.type == .reminder {
+			// Open in Reminders app
+			if let reminder = item.originalObject as? EKReminder {
+				let urlString = "x-apple-reminderkit://REMCDReminder/\(reminder.calendarItemIdentifier)"
+				if let url = URL(string: urlString) {
+					NSWorkspace.shared.open(url)
+				}
+			}
+		} else {
+			// Open in Calendar app
+			if let event = item.originalObject as? EKEvent,
+			   let eventID = event.eventIdentifier {
+				// Calendar uses a different URL scheme
+				let urlString = "ical://ekevent/\(eventID)"
+				if let url = URL(string: urlString) {
+					NSWorkspace.shared.open(url)
 				}
 			}
 		}
@@ -300,7 +321,7 @@ struct TaskItem: Identifiable {
 		} else {
 			// For reminders
 			if !hasTime {
-				return "No time set"
+				return "Anytime task"
 			}
 			guard let date = date else { return nil }
 			let formatter = DateFormatter()
