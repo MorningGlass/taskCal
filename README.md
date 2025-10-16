@@ -8,7 +8,7 @@
 - [ ] iOS app
 - [x] Make Calendar events "doable" - fade and score out like tasks on right click with "Mark as complete" DONE
 - [ ] Double clicking on task opens reminders app at that task or calendar at that entry?
-- [ ] Narrow window
+- [x] Narrow window
 - [x] doubleclick  taskbar title  to return to today
 - [x] Tasks with no time set should say so, rather than 00:00
 
