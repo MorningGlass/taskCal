@@ -239,20 +239,10 @@ struct TaskItemView: View {
 					.strikethrough(displayAsCompleted)
 					.foregroundColor(displayAsCompleted ? .secondary : .primary)
 				
-				HStack {
-					if let time = item.timeString {
-						Text(time)
-							.font(.system(size: 13))
-							.foregroundColor(.secondary)
-					}
-					
-					Spacer()
-					
-					if let listName = item.listName {
-						Text(listName)
-							.font(.system(size: 13))
-							.foregroundColor(.secondary)
-					}
+				if let time = item.timeString {
+					Text(time)
+						.font(.system(size: 13))
+						.foregroundColor(.secondary)
 				}
 			}
 			
