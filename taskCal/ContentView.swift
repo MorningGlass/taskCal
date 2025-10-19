@@ -145,10 +145,6 @@ struct ContentView: View {
 						Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
 							.font(.system(size: 20))
 							.foregroundColor(.primary)
-//							.frame(width: 44, height: 44)
-//							.background(Color(NSColor.controlBackgroundColor))
-//							.clipShape(Circle())
-//							.shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
 					}
 					.buttonStyle(.plain)
 					.padding(24)
@@ -243,10 +239,20 @@ struct TaskItemView: View {
 					.strikethrough(displayAsCompleted)
 					.foregroundColor(displayAsCompleted ? .secondary : .primary)
 				
-				if let time = item.timeString {
-					Text(time)
-						.font(.system(size: 13))
-						.foregroundColor(.secondary)
+				HStack {
+					if let time = item.timeString {
+						Text(time)
+							.font(.system(size: 13))
+							.foregroundColor(.secondary)
+					}
+					
+					Spacer()
+					
+					if let listName = item.listName {
+						Text(listName)
+							.font(.system(size: 13))
+							.foregroundColor(.secondary)
+					}
 				}
 			}
 			
