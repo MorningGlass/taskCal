@@ -189,7 +189,7 @@ struct TaskItemView: View {
 	let isEventMarkedComplete: Bool
 	let onToggleEventCompletion: () -> Void
 	
-	@State private var isAnimating = false
+	@State private var showCheckmark = false
 	
 	private var displayAsCompleted: Bool {
 		item.isCompleted || (item.type == .event && isEventMarkedComplete)
@@ -201,48 +201,67 @@ struct TaskItemView: View {
 			if item.type == .reminder {
 				ZStack {
 					RoundedRectangle(cornerRadius: 6)
-						.strokeBorder(displayAsCompleted ? Color.green : Color.secondary.opacity(0.3), lineWidth: 2)
-						.background(displayAsCompleted ? Color.green.opacity(0.1) : Color.clear)
+						.strokeBorder(displayAsCompleted ? Color.secondary.opacity(0.3) : Color.green, lineWidth: 2)
+						.background(displayAsCompleted ? Color.clear : Color.green.opacity(0.1))
 						.frame(width: 20, height: 20)
 					
-					if displayAsCompleted {
+					if showCheckmark {
 						Image(systemName: "checkmark")
 							.font(.system(size: 12, weight: .bold))
-							.foregroundColor(.green)
-							.scaleEffect(isAnimating ? 1.0 : 0.5)
-							.opacity(isAnimating ? 1.0 : 0.0)
+							.foregroundColor(.secondary)
+							.transition(.scale.combined(with: .opacity))
 					}
 				}
 				.frame(width: 20, height: 20)
-				.scaleEffect(isAnimating ? 1.1 : 1.0)
 				.contentShape(Rectangle())
 				.onTapGesture {
 					print("Tapped on reminder: \(item.title)")
 					
-					// Animate the checkbox
-					withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-						isAnimating = true
+					// Animate based on current state
+					if !displayAsCompleted {
+						// Checking - animate checkmark appearing
+						withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
+							showCheckmark = true
+						}
+					} else {
+						// Unchecking - animate checkmark disappearing
+						withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+							showCheckmark = false
+						}
 					}
 					
 					// Toggle completion
 					viewModel.toggleCompletion(for: item)
-					
-					// Reset animation state
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-						isAnimating = false
+				}
+				.onAppear {
+					// Initialize checkmark state based on completion
+					showCheckmark = displayAsCompleted
+				}
+				.onChange(of: displayAsCompleted) { oldValue, newValue in
+					// Sync showCheckmark with actual state after reload
+					if showCheckmark != newValue {
+						showCheckmark = newValue
 					}
 				}
 			} else {
 				ZStack {
 					Image(systemName: "calendar")
 						.font(.system(size: 16))
-						.foregroundColor(item.isAllDay ? .orange : .red)
+						.foregroundColor(
+							isEventMarkedComplete ? .secondary :
+								(item.isAllDay ? .orange : .red)
+						)
 						.frame(width: 20, height: 20)
 					
 					if isEventMarkedComplete {
 						Image(systemName: "checkmark.circle.fill")
 							.font(.system(size: 10))
-							.foregroundColor(.green)
+							.foregroundColor(.secondary)
+							.background(
+								Circle()
+									.fill(Color(NSColor.controlBackgroundColor))
+									.frame(width: 12, height: 12)
+							)
 							.offset(x: 8, y: -8)
 					}
 				}
