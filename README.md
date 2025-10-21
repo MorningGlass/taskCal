@@ -21,3 +21,10 @@ Added ability to double click on Taskbar Title to return to `dayOffset = 0`
 [[2025-10-16]]
 
 Doubleclick to open in nativeApp
+
+[[2025-10-20]]
+
+Added animation to checkbox for task completion feedback
+Added colour to unchecked task box
+
+
