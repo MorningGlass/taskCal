@@ -189,6 +189,8 @@ struct TaskItemView: View {
 	let isEventMarkedComplete: Bool
 	let onToggleEventCompletion: () -> Void
 	
+	@State private var isAnimating = false
+	
 	private var displayAsCompleted: Bool {
 		item.isCompleted || (item.type == .event && isEventMarkedComplete)
 	}
@@ -207,13 +209,28 @@ struct TaskItemView: View {
 						Image(systemName: "checkmark")
 							.font(.system(size: 12, weight: .bold))
 							.foregroundColor(.green)
+							.scaleEffect(isAnimating ? 1.0 : 0.5)
+							.opacity(isAnimating ? 1.0 : 0.0)
 					}
 				}
 				.frame(width: 20, height: 20)
+				.scaleEffect(isAnimating ? 1.1 : 1.0)
 				.contentShape(Rectangle())
 				.onTapGesture {
 					print("Tapped on reminder: \(item.title)")
+					
+					// Animate the checkbox
+					withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+						isAnimating = true
+					}
+					
+					// Toggle completion
 					viewModel.toggleCompletion(for: item)
+					
+					// Reset animation state
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+						isAnimating = false
+					}
 				}
 			} else {
 				ZStack {
