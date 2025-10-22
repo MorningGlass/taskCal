@@ -12,7 +12,8 @@ struct taskCalApp: App {
 	var body: some Scene {
 		WindowGroup {
 			ContentView()
-				.frame(idealWidth: 600, minHeight: 600)
+				.frame(width: 600)
 		}
+		.defaultSize(width: 600, height: 1200)
 	}
 }
