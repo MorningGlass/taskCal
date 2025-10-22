@@ -8,6 +8,7 @@ struct ContentView: View {
 	@State private var selectedDayOffset = 0
 	// Retain Dark/Light mode toggle state
 	@AppStorage("isDarkMode") private var isDarkMode = false
+	@AppStorage("showCompleted") private var showCompleted = false
 	@State private var markedEventIDs: Set<String> = []
 	
 	var body: some View {
@@ -89,7 +90,26 @@ struct ContentView: View {
 						LazyVStack(alignment: .leading, spacing: 0) {
 							let items = viewModel.itemsForDay(offset: selectedDayOffset)
 							
-							if items.isEmpty {
+							// Separate completed and incomplete items
+							let incompleteItems = items.filter { item in
+								if item.type == .reminder {
+									return !item.isCompleted
+								} else {
+									return !markedEventIDs.contains(item.stableID)
+								}
+							}
+							
+							let completedItems = items.filter { item in
+								if item.type == .reminder {
+									return item.isCompleted
+								} else {
+									return markedEventIDs.contains(item.stableID)
+								}
+							}
+							
+							let displayItems = showCompleted ? (incompleteItems + completedItems) : incompleteItems
+							
+							if displayItems.isEmpty {
 								VStack {
 									Spacer()
 									Text("No tasks or events")
@@ -100,7 +120,7 @@ struct ContentView: View {
 								.frame(maxWidth: .infinity)
 								.frame(height: 300)
 							} else {
-								ForEach(items) { item in
+								ForEach(displayItems) { item in
 									VStack(spacing: 0) {
 										TaskItemView(
 											item: item,
@@ -116,7 +136,7 @@ struct ContentView: View {
 											}
 										)
 										
-										if item.id != items.last?.id {
+										if item.id != displayItems.last?.id {
 											Divider()
 												.padding(.leading, 52)
 										}
@@ -134,11 +154,22 @@ struct ContentView: View {
 				loadMarkedEvents()
 			}
 			
-			// Dark mode toggle in bottom right
+			// Bottom bar with toggles
 			VStack {
 				Spacer()
+				
 				HStack {
+					// Show/hide completed toggle
+					Toggle(isOn: $showCompleted) {
+						Text("Show Completed")
+							.font(.system(size: 13))
+							.foregroundColor(.secondary)
+					}
+					.toggleStyle(.switch)
+					
 					Spacer()
+					
+					// Dark mode toggle
 					Button(action: {
 						isDarkMode.toggle()
 					}) {
@@ -147,8 +178,14 @@ struct ContentView: View {
 							.foregroundColor(.primary)
 					}
 					.buttonStyle(.plain)
-					.padding(24)
 				}
+				.padding(.horizontal, 24)
+				.padding(.vertical, 12)
+				.background(
+					isDarkMode ?
+					Color(NSColor.controlBackgroundColor) :
+						Color(red: 0.95, green: 0.95, blue: 0.95)
+				)
 			}
 		}
 		.preferredColorScheme(isDarkMode ? .dark : .light)
