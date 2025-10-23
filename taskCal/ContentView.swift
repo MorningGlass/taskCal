@@ -283,7 +283,7 @@ struct TaskItemView: View {
 			} else {
 				ZStack {
 					Image(systemName: "calendar")
-						.font(.system(size: 16))
+						.font(.system(size: 20))
 						.foregroundColor(
 							isEventMarkedComplete ? .secondary :
 								(item.isAllDay ? .orange : .red)
