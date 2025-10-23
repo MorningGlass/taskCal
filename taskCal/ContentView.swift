@@ -286,7 +286,7 @@ struct TaskItemView: View {
 						.font(.system(size: 20))
 						.foregroundColor(
 							isEventMarkedComplete ? .secondary :
-								(item.isAllDay ? .orange : .red)
+								(item.isAllDay ? .orange : .green)
 						)
 						.frame(width: 20, height: 20)
 					
