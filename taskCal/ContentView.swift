@@ -10,7 +10,7 @@ struct ContentView: View {
 	@AppStorage("isDarkMode") private var isDarkMode = false
 	@AppStorage("showCompleted") private var showCompleted = false
 	@State private var markedEventIDs: Set<String> = []
-	
+
 	var body: some View {
 		ZStack {
 			VStack(alignment: .leading, spacing: 0) {
@@ -23,17 +23,17 @@ struct ContentView: View {
 							.font(.system(size: 20))
 					}
 					.buttonStyle(.plain)
-					
+
 					Spacer()
-					
+
 					Text(headerTitle)
 						.font(.system(size: 32, weight: .bold))
 						.onTapGesture(count: 2) {
 							selectedDayOffset = 0
 						}
-					
+
 					Spacer()
-					
+
 					Button(action: {
 						selectedDayOffset += 1
 					}) {
@@ -41,7 +41,7 @@ struct ContentView: View {
 							.font(.system(size: 20))
 					}
 					.buttonStyle(.plain)
-					
+
 					Button(action: {
 						viewModel.refresh()
 					}) {
@@ -53,9 +53,9 @@ struct ContentView: View {
 				}
 				.padding(.horizontal, 24)
 				.padding(.vertical, 20)
-				
+
 				Divider()
-				
+
 				// Task list
 				if viewModel.isLoading {
 					VStack {
@@ -89,7 +89,7 @@ struct ContentView: View {
 					ScrollView {
 						LazyVStack(alignment: .leading, spacing: 0) {
 							let items = viewModel.itemsForDay(offset: selectedDayOffset)
-							
+
 							// Separate completed and incomplete items
 							let incompleteItems = items.filter { item in
 								if item.type == .reminder {
@@ -98,7 +98,7 @@ struct ContentView: View {
 									return !markedEventIDs.contains(item.stableID)
 								}
 							}
-							
+
 							let completedItems = items.filter { item in
 								if item.type == .reminder {
 									return item.isCompleted
@@ -106,9 +106,9 @@ struct ContentView: View {
 									return markedEventIDs.contains(item.stableID)
 								}
 							}
-							
+
 							let displayItems = showCompleted ? (incompleteItems + completedItems) : incompleteItems
-							
+
 							if displayItems.isEmpty {
 								VStack {
 									Spacer()
@@ -135,7 +135,7 @@ struct ContentView: View {
 												saveMarkedEvents()
 											}
 										)
-										
+
 										if item.id != displayItems.last?.id {
 											Divider()
 												.padding(.leading, 52)
@@ -153,11 +153,11 @@ struct ContentView: View {
 				viewModel.requestPermissions()
 				loadMarkedEvents()
 			}
-			
+
 			// Bottom bar with toggles
 			VStack {
 				Spacer()
-				
+
 				HStack {
 					// Show/hide completed toggle
 					Toggle(isOn: $showCompleted) {
@@ -166,9 +166,9 @@ struct ContentView: View {
 							.foregroundColor(.secondary)
 					}
 					.toggleStyle(.switch)
-					
+
 					Spacer()
-					
+
 					// Dark mode toggle
 					Button(action: {
 						isDarkMode.toggle()
@@ -190,12 +190,12 @@ struct ContentView: View {
 		}
 		.preferredColorScheme(isDarkMode ? .dark : .light)
 	}
-	
+
 	private var headerTitle: String {
 		let calendar = Calendar.current
 		let date = calendar.date(byAdding: .day, value: selectedDayOffset, to: Date())!
 		let formatter = DateFormatter()
-		
+
 		if selectedDayOffset == 0 {
 			return "Today"
 		} else if selectedDayOffset == 1 {
@@ -207,12 +207,12 @@ struct ContentView: View {
 			return formatter.string(from: date)
 		}
 	}
-	
+
 	private func saveMarkedEvents() {
 		let array = Array(markedEventIDs)
 		UserDefaults.standard.set(array, forKey: "markedEventIDs")
 	}
-	
+
 	private func loadMarkedEvents() {
 		if let array = UserDefaults.standard.array(forKey: "markedEventIDs") as? [String] {
 			markedEventIDs = Set(array)
@@ -225,13 +225,13 @@ struct TaskItemView: View {
 	let viewModel: TaskViewModel
 	let isEventMarkedComplete: Bool
 	let onToggleEventCompletion: () -> Void
-	
+
 	@State private var showCheckmark = false
-	
+
 	private var displayAsCompleted: Bool {
 		item.isCompleted || (item.type == .event && isEventMarkedComplete)
 	}
-	
+
 	var body: some View {
 		HStack(alignment: .center, spacing: 16) {
 			// Icon based on type
@@ -241,7 +241,7 @@ struct TaskItemView: View {
 						.strokeBorder(displayAsCompleted ? Color.secondary.opacity(0.3) : Color.green, lineWidth: 2)
 						.background(displayAsCompleted ? Color.clear : Color.green.opacity(0.1))
 						.frame(width: 20, height: 20)
-					
+
 					if showCheckmark {
 						Image(systemName: "checkmark")
 							.font(.system(size: 12, weight: .bold))
@@ -253,7 +253,7 @@ struct TaskItemView: View {
 				.contentShape(Rectangle())
 				.onTapGesture {
 					print("Tapped on reminder: \(item.title)")
-					
+
 					// Animate based on current state
 					if !displayAsCompleted {
 						// Checking - animate checkmark appearing
@@ -266,7 +266,7 @@ struct TaskItemView: View {
 							showCheckmark = false
 						}
 					}
-					
+
 					// Toggle completion
 					viewModel.toggleCompletion(for: item)
 				}
@@ -289,7 +289,7 @@ struct TaskItemView: View {
 								(item.isAllDay ? .orange : .green)
 						)
 						.frame(width: 20, height: 20)
-					
+
 					if isEventMarkedComplete {
 						Image(systemName: "checkmark.circle.fill")
 							.font(.system(size: 10))
@@ -304,21 +304,21 @@ struct TaskItemView: View {
 				}
 				.frame(width: 20, height: 20)
 			}
-			
+
 			// Task content
 			VStack(alignment: .leading, spacing: 2) {
 				Text(item.title)
 					.font(.system(size: 17))
 					.strikethrough(displayAsCompleted)
 					.foregroundColor(displayAsCompleted ? .secondary : .primary)
-				
+
 				if let time = item.timeString {
 					Text(time)
 						.font(.system(size: 13))
 						.foregroundColor(.secondary)
 				}
 			}
-			
+
 			Spacer()
 		}
 		.padding(.vertical, 12)
@@ -336,7 +336,7 @@ struct TaskItemView: View {
 			}
 		}
 	}
-	
+
 	private func openInNativeApp() {
 		if item.type == .reminder {
 			// Open in Reminders app
@@ -378,7 +378,7 @@ struct TaskItem: Identifiable {
 	let hasTime: Bool
 	let originalObject: Any // EKReminder or EKEvent
 	let stableID: String // Stable identifier for persistence
-	
+
 	var timeString: String? {
 		if type == .event {
 			if isAllDay {
@@ -409,16 +409,16 @@ class TaskViewModel: ObservableObject {
 	@Published var isLoading = false
 	@Published var needsPermission = true
 	@Published var draggedItem: TaskItem?
-	
+
 	private let eventStore = EKEventStore()
-	
+
 	func requestPermissions() {
 		isLoading = true
-		
+
 		let group = DispatchGroup()
 		var reminderGranted = false
 		var calendarGranted = false
-		
+
 		group.enter()
 		if #available(macOS 14.0, *) {
 			eventStore.requestFullAccessToReminders { granted, _ in
@@ -431,7 +431,7 @@ class TaskViewModel: ObservableObject {
 				group.leave()
 			}
 		}
-		
+
 		group.enter()
 		if #available(macOS 14.0, *) {
 			eventStore.requestFullAccessToEvents { granted, _ in
@@ -444,27 +444,27 @@ class TaskViewModel: ObservableObject {
 				group.leave()
 			}
 		}
-		
+
 		group.notify(queue: .main) {
 			self.needsPermission = !reminderGranted || !calendarGranted
 			self.isLoading = false
-			
+
 			if !self.needsPermission {
 				self.loadData()
 			}
 		}
 	}
-	
+
 	func refresh() {
 		loadData()
 	}
-	
+
 	func loadData() {
 		isLoading = true
-		
+
 		let group = DispatchGroup()
 		var allItems: [TaskItem] = []
-		
+
 		// Load reminders
 		group.enter()
 		let predicate = eventStore.predicateForReminders(in: nil)
@@ -472,18 +472,18 @@ class TaskViewModel: ObservableObject {
 			if let reminders = reminders {
 				let reminderItems = reminders.compactMap { reminder -> TaskItem? in
 					guard let dueDate = reminder.dueDateComponents?.date else { return nil }
-					
+
 					// Only show reminders within the date range we care about
 					let calendar = Calendar.current
 					let startDate = calendar.date(byAdding: .day, value: -7, to: Date())!
 					let endDate = calendar.date(byAdding: .day, value: 14, to: Date())!
-					
+
 					guard dueDate >= startDate && dueDate < endDate else { return nil }
-					
+
 					// Check if reminder has a time set (hour and minute components)
 					let hasTime = reminder.dueDateComponents?.hour != nil &&
 					reminder.dueDateComponents?.minute != nil
-					
+
 					return TaskItem(
 						title: reminder.title ?? "Untitled",
 						date: dueDate,
@@ -500,17 +500,17 @@ class TaskViewModel: ObservableObject {
 			}
 			group.leave()
 		}
-		
+
 		// Load calendar events
 		group.enter()
 		Task {
 			let calendar = Calendar.current
 			let startDate = calendar.startOfDay(for: calendar.date(byAdding: .day, value: -7, to: Date())!)
 			let endDate = calendar.date(byAdding: .day, value: 14, to: startDate)!
-			
+
 			let eventPredicate = self.eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: nil)
 			let events = self.eventStore.events(matching: eventPredicate)
-			
+
 			let eventItems = events.map { event in
 				TaskItem(
 					title: event.title ?? "Untitled Event",
@@ -524,44 +524,44 @@ class TaskViewModel: ObservableObject {
 					stableID: event.eventIdentifier ?? UUID().uuidString
 				)
 			}
-			
+
 			await MainActor.run {
 				allItems.append(contentsOf: eventItems)
 				group.leave()
 			}
 		}
-		
+
 		group.notify(queue: .main) {
 			self.items = allItems.sorted { ($0.date ?? Date.distantPast) < ($1.date ?? Date.distantPast) }
 			self.isLoading = false
 		}
 	}
-	
+
 	func itemsForDay(offset: Int) -> [TaskItem] {
 		let calendar = Calendar.current
 		let targetDate = calendar.date(byAdding: .day, value: offset, to: Date())!
 		let startOfDay = calendar.startOfDay(for: targetDate)
 		let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
-		
+
 		return items.filter { item in
 			guard let date = item.date else { return false }
 			return date >= startOfDay && date < endOfDay
 		}
 	}
-	
+
 	func toggleCompletion(for item: TaskItem) {
 		print("Toggle completion called for: \(item.title)")
-		
+
 		guard item.type == .reminder,
 			  let reminder = item.originalObject as? EKReminder else {
 			print("Not a reminder or couldn't cast to EKReminder")
 			return
 		}
-		
+
 		print("Current completion state: \(reminder.isCompleted)")
 		reminder.isCompleted = !reminder.isCompleted
 		print("New completion state: \(reminder.isCompleted)")
-		
+
 		do {
 			try eventStore.save(reminder, commit: true)
 			print("Successfully saved reminder")
