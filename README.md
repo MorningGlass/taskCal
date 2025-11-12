@@ -27,4 +27,7 @@ Doubleclick to open in nativeApp
 Added animation to checkbox for task completion feedback
 Added colour to unchecked task box
 
+[[2025-11-11]
+
+Added better animation for check box
 
