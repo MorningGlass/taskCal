@@ -1,9 +1,9 @@
 ## Roadmap
 
 - [x] Hide time on all day events, and use a different (maybe grey) calendar icon   
-- [ ] Try larger icon
-- [ ] Move completed tasks to bottom of list  
-- [ ] Show tags? (not sure about this)  
+- [x] Try larger icon
+- [x] Move completed tasks to bottom of list  
+- [x] Show tags? (not sure about this)  
 - [x] dark mode toggle... 
 - [ ] iOS app
 - [x] Make Calendar events "doable" - fade and score out like tasks on right click with "Mark as complete" DONE
