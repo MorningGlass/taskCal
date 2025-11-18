@@ -11,6 +11,7 @@
 - [x] Narrow window
 - [x] doubleclick  taskbar title  to return to today
 - [x] Tasks with no time set should say so, rather than 00:00
+- [ ] Add swipe gestures in iOS
 
 ## Updates
 
