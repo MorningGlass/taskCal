@@ -5,7 +5,7 @@
 - [x] Move completed tasks to bottom of list  
 - [x] Show tags? (not sure about this)  
 - [x] dark mode toggle... 
-- [ ] iOS app
+- [x] iOS app
 - [x] Make Calendar events "doable" - fade and score out like tasks on right click with "Mark as complete" DONE
 - [x] Double clicking on task opens reminders app at that task or calendar at that entry?
 - [x] Narrow window
@@ -30,4 +30,8 @@ Added colour to unchecked task box
 [[2025-11-11]
 
 Added better animation for check box
+
+[[2025-11-18]]
+
+Added iOS functionality, running on iPhone16 for testing
 
